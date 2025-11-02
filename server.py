@@ -9,6 +9,7 @@ from pydantic import BaseModel
 import os
 import json
 import uvicorn
+import requests  # Using requests instead of httpx for now
 from typing import Dict, Any
 import asyncio
 from datetime import datetime
@@ -33,6 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Dummy server configuration
+DUMMY_SERVER_URL = "http://localhost:8001"
+
 # Serve static files (frontend)
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
@@ -41,6 +45,9 @@ class AnalysisInput(BaseModel):
     topic: str
     text: str = ""
     significance_score: float = 0.8
+
+class DummyServerRequest(BaseModel):
+    perspective: str = "all"
 
 class AnalysisStatus(BaseModel):
     status: str
@@ -64,6 +71,56 @@ async def serve_frontend():
 async def favicon():
     """Return a simple favicon to prevent 404 errors"""
     return HTTPException(status_code=204, detail="No favicon")
+
+@app.get("/load-sample-data")
+async def load_sample_data():
+    """Load sample data from dummy server for the frontend"""
+    print(f"[DEBUG] load_sample_data endpoint called")
+    print(f"[DEBUG] Attempting to connect to dummy server at: {DUMMY_SERVER_URL}")
+    
+    try:
+        print(f"[DEBUG] Making request to: {DUMMY_SERVER_URL}/data/sample-input")
+        
+        # Get sample input data from dummy server
+        input_response = requests.get(f"{DUMMY_SERVER_URL}/data/sample-input", timeout=5)
+        print(f"[DEBUG] Sample input response status: {input_response.status_code}")
+        
+        if input_response.status_code != 200:
+            raise HTTPException(status_code=input_response.status_code, detail=f"Dummy server returned {input_response.status_code} for sample input")
+        
+        sample_input = input_response.json()
+        print(f"[DEBUG] Sample input data: {sample_input}")
+        
+        # Get all perspectives data to show count
+        print(f"[DEBUG] Making request to: {DUMMY_SERVER_URL}/data/perspectives/all")
+        perspectives_response = requests.get(f"{DUMMY_SERVER_URL}/data/perspectives/all", timeout=5)
+        print(f"[DEBUG] Perspectives response status: {perspectives_response.status_code}")
+        
+        total_items = 0
+        if perspectives_response.status_code == 200:
+            perspectives_data = perspectives_response.json()
+            total_items = perspectives_data.get("total_search_items", 0)
+            print(f"[DEBUG] Total items found: {total_items}")
+        
+        result = {
+            "status": "success",
+            "message": f"Sample data loaded from dummy server ({total_items} perspective items available)",
+            "topic": sample_input.get("topic", ""),
+            "text": sample_input.get("text", ""),
+            "significance_score": sample_input.get("significance_score", 0.8),
+            "total_search_items": total_items,
+            "timestamp": sample_input.get("timestamp", datetime.now().isoformat())
+        }
+        
+        print(f"[DEBUG] Returning result: {result}")
+        return result
+        
+    except requests.RequestException as e:
+        print(f"[ERROR] HTTP request error: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Cannot connect to dummy server: {str(e)}")
+    except Exception as e:
+        print(f"[ERROR] General error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.post("/process")
 async def start_analysis(input_data: AnalysisInput):

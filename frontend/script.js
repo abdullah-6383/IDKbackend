@@ -10,7 +10,7 @@ const API_BASE_URL = 'http://localhost:8000'; // Change to your GCP Cloud Run UR
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Information Trust Analysis System loaded');
-    loadSampleData(); // Load sample data by default
+    // Don't auto-load sample data - user can press "Load Sample" button
 });
 
 // Tab Management
@@ -33,12 +33,49 @@ function showTab(tabName) {
 }
 
 // Load sample data
-function loadSampleData() {
-    document.getElementById('topic').value = 'Charles James Kirk (October 14, 1993 – September 10, 2025)';
-    document.getElementById('context').value = 'at the age of 31, Kirk was assassinated by gunshot on September 10, 2025, while speaking at a TPUSA debate at Utah Valley University in Orem, Utah. His assassination garnered international attention and widespread condemnation of political violence. Donald Trump announced that Kirk would be honored posthumously. Since his death, Kirk has been considered an icon of contemporary conservatism.';
-    document.getElementById('significance').value = '0.99';
-    
-    addLog('Sample data loaded successfully', 'info');
+async function loadSampleData() {
+    try {
+        showProgress(10, 'Loading sample data from dummy server via main server...');
+        
+        // Call the main server endpoint that fetches from dummy server
+        const response = await fetch(`${API_BASE_URL}/load-sample-data`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+            throw new Error(data.message || 'Unknown error occurred');
+        }
+        
+        showProgress(90, 'Populating form...');
+        
+        // Update the form with sample data from dummy server
+        document.getElementById('topic').value = data.topic || 'Charles James Kirk (October 14, 1993 – September 10, 2025)';
+        document.getElementById('context').value = data.text || 'at the age of 31, Kirk was assassinated by gunshot on September 10, 2025, while speaking at a TPUSA debate at Utah Valley University in Orem, Utah. His assassination garnered international attention and widespread condemnation of political violence. Donald Trump announced that Kirk would be honored posthumously. Since his death, Kirk has been considered an icon of contemporary conservatism.';
+        document.getElementById('significance').value = data.significance_score || '0.99';
+        
+        addLog(`Sample data loaded successfully from dummy server (${data.total_search_items || 0} perspective items available)`, 'info');
+        hideProgress();
+        
+    } catch (error) {
+        console.error('Error loading sample data:', error);
+        
+        // Fallback to hardcoded data if servers are not available
+        document.getElementById('topic').value = 'Charles James Kirk (October 14, 1993 – September 10, 2025)';
+        document.getElementById('context').value = 'at the age of 31, Kirk was assassinated by gunshot on September 10, 2025, while speaking at a TPUSA debate at Utah Valley University in Orem, Utah. His assassination garnered international attention and widespread condemnation of political violence. Donald Trump announced that Kirk would be honored posthumously. Since his death, Kirk has been considered an icon of contemporary conservatism.';
+        document.getElementById('significance').value = '0.99';
+        
+        addLog(`Using fallback sample data (servers unavailable: ${error.message})`, 'warning');
+        hideProgress();
+    }
 }
 
 // Start the analysis process
