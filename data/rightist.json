@@ -1,0 +1,56 @@
+[
+    {
+        "color": "blue",
+        "bias_x": 0.7077,
+        "significance_y": 0.91,
+        "text": "The focus should be on compassion for his loved ones, not on political agendas."
+    },
+    {
+        "color": "indigo",
+        "bias_x": 0.8,
+        "significance_y": 0.9,
+        "text": "This is a sad event that should prompt reflection on our own mortality."
+    },
+    {
+        "color": "violet",
+        "bias_x": 0.9077,
+        "significance_y": 0.9,
+        "text": "This is a patriotic loss; he was likely a good man who was betrayed by the system he loved."
+    },
+    {
+        "color": "violet",
+        "bias_x": 0.9846,
+        "significance_y": 0.9,
+        "text": "This is a stark warning against the dangers of collectivism and the nanny state."
+    },
+    {
+        "color": "blue",
+        "bias_x": 0.6308,
+        "significance_y": 0.88,
+        "text": "The community should rally around the family to provide practical and emotional support."
+    },
+    {
+        "color": "blue",
+        "bias_x": 0.6,
+        "significance_y": 0.84,
+        "text": "The family deserves privacy during this painful time, and the media should respect that."
+    },
+    {
+        "color": "green",
+        "bias_x": 0.5846,
+        "significance_y": 0.8,
+        "text": "This is a shared human experience, reminding us of our common vulnerability."
+    },
+    {
+        "color": "indigo",
+        "bias_x": 0.7385,
+        "significance_y": 0.8,
+        "text": "The family of Charles James Kirk deserves privacy during this painful period."
+    },
+    {
+        "color": "violet",
+        "bias_x": 0.8769,
+        "significance_y": 0.8,
+        "text": "This is a clear example of the breakdown of traditional family values, which are the bedrock of a strong society."
+    }
+]

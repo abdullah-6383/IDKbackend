@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Trust Analysis System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-search"></i> Information Trust Analysis System</h1>
+                <p>Automated fact-checking through AI-powered search, analysis, and debate simulation</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('input')">
+                <i class="fas fa-edit"></i> Input Topic
+            </button>
+            <button class="tab-btn" onclick="showTab('process')">
+                <i class="fas fa-cogs"></i> Process Flow
+            </button>
+            <button class="tab-btn" onclick="showTab('results')">
+                <i class="fas fa-chart-line"></i> Results
+            </button>
+            <button class="tab-btn" onclick="showTab('debate')">
+                <i class="fas fa-balance-scale"></i> Debate
+            </button>
+        </nav>
+
+        <!-- Input Tab -->
+        <div id="input" class="tab-content active">
+            <div class="input-section">
+                <h2><i class="fas fa-keyboard"></i> Enter Topic for Analysis</h2>
+                
+                <div class="form-group">
+                    <label for="topic">Topic/Statement to Analyze:</label>
+                    <textarea id="topic" placeholder="Enter the topic or statement you want to analyze for trustworthiness..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="context">Additional Context (Optional):</label>
+                    <textarea id="context" placeholder="Provide any additional context that might help with the analysis..." rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="significance">Significance Score (0.0 - 1.0):</label>
+                    <input type="number" id="significance" min="0" max="1" step="0.1" value="0.8" placeholder="0.8">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="startAnalysis()">
+                        <i class="fas fa-play"></i> Start Analysis
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadSampleData()">
+                        <i class="fas fa-file-import"></i> Load Sample
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Flow Tab -->
+        <div id="process" class="tab-content">
+            <div class="process-section">
+                <h2><i class="fas fa-sitemap"></i> Analysis Process</h2>
+                
+                <div class="process-status">
+                    <div class="status-header">
+                        <h3>Current Status: <span id="current-status">Ready</span></h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="process-steps">
+                    <div class="step" id="step-1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Data Input & Configuration</h4>
+                            <p>Loading configuration and input data</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-1"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-1">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Query Enhancement</h4>
+                            <p>AI-powered query rephrasing for better search results</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-2"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-2">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Google Search</h4>
+                            <p>Searching for relevant information using Google Custom Search API</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-3"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-3">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-4">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Content Extraction</h4>
+                            <p>Web scraping to extract full page content</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-4"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-4">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-5">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Relevance Analysis</h4>
+                            <p>AI evaluation of content relevance to topic</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-5"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-5">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-6">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Trust Score Evaluation</h4>
+                            <p>Source credibility and trustworthiness analysis</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-6"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-6">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-7">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Results Processing</h4>
+                            <p>Organizing and saving filtered results</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-7"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-7">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-8">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>AI Debate Simulation</h4>
+                            <p>Multi-agent debate on information trustworthiness</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-8"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-8">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-9">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <h4>Final Verdict</h4>
+                            <p>Judge AI provides final trust score and reasoning</p>
+                            <div class="step-status">
+                                <span class="status-icon" id="status-9"><i class="fas fa-clock"></i></span>
+                                <span class="status-text" id="text-9">Waiting</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="process-logs">
+                    <h3><i class="fas fa-terminal"></i> Process Logs</h3>
+                    <div class="log-container" id="log-container">
+                        <p class="log-entry">System ready. Waiting for input...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="results" class="tab-content">
+            <div class="results-section">
+                <h2><i class="fas fa-chart-pie"></i> Analysis Results</h2>
+                
+                <div class="results-summary">
+                    <div class="summary-card">
+                        <div class="card-icon"><i class="fas fa-link"></i></div>
+                        <div class="card-content">
+                            <h3 id="total-links">0</h3>
+                            <p>Total Links Found</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="card-content">
+                            <h3 id="relevant-links">0</h3>
+                            <p>Relevant Links</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="card-content">
+                            <h3 id="avg-trust">0%</h3>
+                            <p>Average Trust Score</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        <div class="card-content">
+                            <h3 id="processing-time">0s</h3>
+                            <p>Processing Time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-filters">
+                    <h3><i class="fas fa-filter"></i> Filter Results</h3>
+                    <div class="filter-controls">
+                        <select id="perspective-filter">
+                            <option value="all">All Perspectives</option>
+                            <option value="common">Common Sources</option>
+                            <option value="leftist">Leftist Sources</option>
+                            <option value="rightist">Rightist Sources</option>
+                        </select>
+                        <select id="trust-filter">
+                            <option value="all">All Trust Levels</option>
+                            <option value="high">High Trust (0.8+)</option>
+                            <option value="medium">Medium Trust (0.5-0.8)</option>
+                            <option value="low">Low Trust (0.0-0.5)</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid" id="results-grid">
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <p>No analysis results yet. Start an analysis to see results here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debate Tab -->
+        <div id="debate" class="tab-content">
+            <div class="debate-section">
+                <h2><i class="fas fa-balance-scale"></i> AI Debate Analysis</h2>
+                
+                <div class="debate-controls">
+                    <button class="btn btn-primary" onclick="startDebate()" id="debate-btn">
+                        <i class="fas fa-play"></i> Start Debate
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearDebate()">
+                        <i class="fas fa-trash"></i> Clear Debate
+                    </button>
+                </div>
+
+                <div class="trust-score-display" id="trust-score-display" style="display: none;">
+                    <div class="trust-score-card">
+                        <div class="score-circle">
+                            <div class="score-number" id="final-trust-score">0%</div>
+                        </div>
+                        <div class="score-info">
+                            <h3>Final Trust Score</h3>
+                            <p id="trust-verdict">Analysis pending...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="debate-arena" id="debate-arena">
+                    <div class="agents-intro">
+                        <div class="agent-card leftist">
+                            <div class="agent-avatar">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h4>Leftist Agent</h4>
+                            <p>Analyzing from progressive perspective with leftist-leaning sources</p>
+                        </div>
+                        
+                        <div class="vs-indicator">
+                            <i class="fas fa-bolt"></i>
+                            <span>VS</span>
+                        </div>
+                        
+                        <div class="agent-card rightist">
+                            <div class="agent-avatar">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h4>Rightist Agent</h4>
+                            <p>Analyzing from conservative perspective with rightist-leaning sources</p>
+                        </div>
+                    </div>
+
+                    <div class="debate-transcript" id="debate-transcript">
+                        <div class="no-debate">
+                            <i class="fas fa-comments"></i>
+                            <p>No debate started yet. Click "Start Debate" to begin the AI analysis.</p>
+                        </div>
+                    </div>
+
+                    <div class="judge-section" id="judge-section" style="display: none;">
+                        <div class="judge-card">
+                            <div class="judge-avatar">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <h4>Judge AI</h4>
+                            <div class="judge-verdict" id="judge-verdict">
+                                <p>Analyzing debate and evidence...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

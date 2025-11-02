@@ -1,0 +1,56 @@
+[
+    {
+        "color": "red",
+        "bias_x": 0.0,
+        "significance_y": 0.8,
+        "text": "The premature death of Charles James Kirk highlights the fragility of life under a capitalist system that prioritizes profit over human well-being."
+    },
+    {
+        "color": "orange",
+        "bias_x": 0.1538,
+        "significance_y": 0.8,
+        "text": "The premature passing of Charles James Kirk is a stark reminder of the systemic failures in our public health infrastructure."
+    },
+    {
+        "color": "orange",
+        "bias_x": 0.2154,
+        "significance_y": 0.8,
+        "text": "The lack of affordable mental healthcare services may have played a role in Kirk's ultimate fate."
+    },
+    {
+        "color": "orange",
+        "bias_x": 0.2769,
+        "significance_y": 0.8,
+        "text": "The premature loss of a young life is a societal failure that requires collective action and political will."
+    },
+    {
+        "color": "yellow",
+        "bias_x": 0.3692,
+        "significance_y": 0.77,
+        "text": "The story of Charles James Kirk's life, however short, deserves to be remembered."
+    },
+    {
+        "color": "yellow",
+        "bias_x": 0.3077,
+        "significance_y": 0.73,
+        "text": "The loss of Charles James Kirk is a somber event that prompts reflection on the value of human life."
+    },
+    {
+        "color": "red",
+        "bias_x": 0.0308,
+        "significance_y": 0.7,
+        "text": "The circumstances of Kirk's death must be thoroughly investigated to ensure no negligence or malpractice occurred."
+    },
+    {
+        "color": "red",
+        "bias_x": 0.0769,
+        "significance_y": 0.7,
+        "text": "We must fight for policies that ensure everyone has access to healthy food, clean water, and safe living conditions."
+    },
+    {
+        "color": "red",
+        "bias_x": 0.1231,
+        "significance_y": 0.7,
+        "text": "The loss of Charles James Kirk is a collective loss, a reminder of the human cost of our broken social systems."
+    }
+]

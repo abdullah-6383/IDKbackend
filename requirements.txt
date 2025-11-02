@@ -1,0 +1,9 @@
+google-api-python-client
+selenium
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-generativeai
+fastapi
+uvicorn
+requests

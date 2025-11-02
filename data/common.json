@@ -1,0 +1,20 @@
+[
+    {
+        "color": "green",
+        "bias_x": 0.5231,
+        "significance_y": 0.9,
+        "text": "Let's offer our sincerest condolences to the family and friends of Charles James Kirk."
+    },
+    {
+        "color": "green",
+        "bias_x": 0.4615,
+        "significance_y": 0.8,
+        "text": "This event prompts us to reflect on the fragility of life and the importance of cherishing our time."
+    },
+    {
+        "color": "yellow",
+        "bias_x": 0.4308,
+        "significance_y": 0.7,
+        "text": "The death of Charles James Kirk is a moment to pause and consider our own mortality."
+    }
+]
