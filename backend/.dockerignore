@@ -1,0 +1,20 @@
+# Ignore files not needed in the container build context
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite
+.env
+.venv/
+.vscode/
+.git/
+.gitignore
+
+# Large local output folders
+search_results/
+relevant_*.json
+
+# Local artifacts
+*.swp
+*.tmp

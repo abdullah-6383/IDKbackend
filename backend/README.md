@@ -95,3 +95,54 @@ The backend is configured to accept requests from:
 - `http://127.0.0.1:8080`
 
 For production, update the CORS origins in `server.py`.
+
+## ☁️ Deploy to Google Cloud Run (with Selenium)
+
+This backend uses Selenium with headless Chromium and Chromedriver. The provided `Dockerfile` installs both and runs FastAPI via Uvicorn on Cloud Run.
+
+Prereqs:
+- Google Cloud CLI installed and authenticated
+- Project and region set: `gcloud config set project <PROJECT_ID>` and `gcloud config set run/region <REGION>`
+
+Enable APIs:
+```powershell
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
+```
+
+Create Artifact Registry (Docker):
+```powershell
+gcloud artifacts repositories create idk-backend --repository-format=docker --location=<REGION>
+```
+
+Build and push the image (from the `backend/` folder):
+```powershell
+gcloud builds submit --tag <REGION>-docker.pkg.dev/<PROJECT_ID>/idk-backend/backend:latest
+```
+
+Deploy to Cloud Run:
+```powershell
+gcloud run deploy idk-backend \
+   --image <REGION>-docker.pkg.dev/<PROJECT_ID>/idk-backend/backend:latest \
+   --platform managed \
+   --allow-unauthenticated \
+   --set-env-vars PORT=8080
+```
+
+Recommended: move secrets to Secret Manager and inject as env vars:
+```powershell
+# Create secrets
+gcloud secrets create GOOGLE_API_KEY --replication-policy=automatic
+echo -n "<YOUR_GOOGLE_API_KEY>" | gcloud secrets versions add GOOGLE_API_KEY --data-file=-
+
+gcloud secrets create SEARCH_ENGINE_ID --replication-policy=automatic
+echo -n "<YOUR_CSE_CX>" | gcloud secrets versions add SEARCH_ENGINE_ID --data-file=-
+
+# Re-deploy setting secrets
+gcloud run services update idk-backend \
+   --set-secrets GOOGLE_API_KEY=GOOGLE_API_KEY:latest,SEARCH_ENGINE_ID=SEARCH_ENGINE_ID:latest
+```
+
+Notes:
+- Container listens on `$PORT` and `0.0.0.0` (Cloud Run requirement).
+- Selenium runs Chrome headless with `--no-sandbox` and `--disable-dev-shm-usage` via code in `main.py`.
+- If your frontend will be on a custom domain, update CORS origins or set an env like `FRONTEND_ORIGIN` and handle it in `server.py`.
