@@ -4,14 +4,47 @@ let processSteps = [];
 let debateData = null;
 let resultsData = [];
 
-// API Base URL - Update this when deploying to GCP
-const API_BASE_URL = 'http://localhost:8000'; // Change to your GCP Cloud Run URL
+// API Configuration - Get from config or fallback
+const getApiUrl = () => {
+    if (window.APP_CONFIG) {
+        const env = window.APP_CONFIG.ENVIRONMENT || 'development';
+        return window.APP_CONFIG.API_URLS[env];
+    }
+    
+    // Fallback configuration
+    return window.location.hostname === 'localhost' 
+        ? 'http://localhost:8000'  // Local development
+        : 'https://your-backend-domain.com';  // Production backend URL
+};
+
+const API_BASE_URL = getApiUrl();
+console.log(`Frontend connecting to API: ${API_BASE_URL}`);
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Information Trust Analysis System loaded');
+    console.log('Information Trust Analysis System Frontend loaded');
+    console.log(`API Backend: ${API_BASE_URL}`);
+    
+    // Test backend connectivity
+    testBackendConnection();
+    
     // Don't auto-load sample data - user can press "Load Sample" button
 });
+
+// Test backend connection
+async function testBackendConnection() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/health`, { timeout: 5000 });
+        if (response.ok) {
+            console.log('✅ Backend connection successful');
+        } else {
+            console.warn('⚠️ Backend responded but with error:', response.status);
+        }
+    } catch (error) {
+        console.error('❌ Backend connection failed:', error.message);
+        addLog('Backend connection failed - some features may not work', 'warning');
+    }
+}
 
 // Tab Management
 function showTab(tabName) {
@@ -387,7 +420,21 @@ function applyFilters() {
 // Start debate simulation
 async function startDebate() {
     console.log('startDebate called');
+    
+    // Check if we're in the new module layout
+    const moduleLayout = document.querySelector('.module-layout');
+    if (moduleLayout && moduleLayout.offsetParent !== null) {
+        // Use the new debate analysis function
+        return startDebateAnalysis();
+    }
+    
+    // Original debate functionality for other tabs
     const debateBtn = document.getElementById('debate-btn');
+    if (!debateBtn) {
+        console.warn('Debate button not found, likely in module layout');
+        return;
+    }
+    
     debateBtn.disabled = true;
     debateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Debate...';
     
@@ -712,3 +759,431 @@ document.addEventListener('keydown', function(e) {
         startDebate();
     }
 });
+
+// Module Layout Navigation Functions
+function goToModule(moduleNumber) {
+    console.log(`Navigating to module ${moduleNumber}`);
+    
+    // Update active module indicator
+    document.querySelectorAll('.nav-tab').forEach((tab, index) => {
+        tab.classList.toggle('active', index + 1 === moduleNumber);
+    });
+    
+    // Update progress dots
+    document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index + 1 === moduleNumber);
+    });
+    
+    // Switch to appropriate tab based on module
+    switch(moduleNumber) {
+        case 1:
+            showTab('input');
+            break;
+        case 2:
+            showTab('process');
+            break;
+        case 3:
+            showTab('results');
+            break;
+        case 4:
+            showTab('debate');
+            break;
+        case 5:
+            // Future module - could be summary or export
+            showTab('results');
+            break;
+        default:
+            showTab('input');
+    }
+}
+
+function goToHome() {
+    showTab('input');
+    // Reset all module indicators
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector('.nav-tab').classList.add('active');
+    
+    // Reset progress dots
+    document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === 0);
+    });
+}
+
+function previousModule() {
+    const activeTab = document.querySelector('.tab-btn.active');
+    const tabs = ['input', 'process', 'results', 'debate'];
+    let currentIndex = 0;
+    
+    // Find current tab index
+    if (activeTab.textContent.toLowerCase().includes('process')) currentIndex = 1;
+    else if (activeTab.textContent.toLowerCase().includes('results')) currentIndex = 2;
+    else if (activeTab.textContent.toLowerCase().includes('debate')) currentIndex = 3;
+    
+    if (currentIndex > 0) {
+        const previousTab = tabs[currentIndex - 1];
+        showTab(previousTab);
+        goToModule(currentIndex); // currentIndex is now the previous module (0-based to 1-based)
+    } else {
+        // Go to home if at first module
+        goToHome();
+    }
+}
+
+function nextModule() {
+    const activeTab = document.querySelector('.tab-btn.active');
+    const tabs = ['input', 'process', 'results', 'debate'];
+    let currentIndex = 0;
+    
+    // Find current tab index
+    if (activeTab.textContent.toLowerCase().includes('process')) currentIndex = 1;
+    else if (activeTab.textContent.toLowerCase().includes('results')) currentIndex = 2;
+    else if (activeTab.textContent.toLowerCase().includes('debate')) currentIndex = 3;
+    
+    if (currentIndex < tabs.length - 1) {
+        const nextTab = tabs[currentIndex + 1];
+        showTab(nextTab);
+        goToModule(currentIndex + 2); // currentIndex + 1 for next, +1 for 1-based indexing
+    }
+}
+
+// Keyboard navigation (arrow keys)
+document.addEventListener('keydown', function(e) {
+    const activeTab = document.querySelector('.tab-btn.active');
+    let currentModule = 1;
+    
+    // Find current module
+    if (activeTab.textContent.toLowerCase().includes('process')) currentModule = 2;
+    else if (activeTab.textContent.toLowerCase().includes('results')) currentModule = 3;
+    else if (activeTab.textContent.toLowerCase().includes('debate')) currentModule = 4;
+    
+    if (e.key === 'ArrowLeft' && currentModule > 1) {
+        goToModule(currentModule - 1);
+    } else if (e.key === 'ArrowRight' && currentModule < 5) {
+        goToModule(currentModule + 1);
+    }
+    
+    // Existing shortcuts
+    if (e.ctrlKey && e.key === 'Enter') {
+        startAnalysis();
+    }
+    
+    if (e.ctrlKey && e.key === 'd') {
+        startDebate();
+    }
+});
+
+// Legacy function aliases for backward compatibility
+function goToStep(stepNumber) {
+    goToModule(stepNumber);
+}
+
+function goHome() {
+    goToHome();
+}
+
+function previousStep() {
+    previousModule();
+}
+
+function nextStep() {
+    nextModule();
+}
+
+// Debate Analysis Functions
+async function startDebateAnalysis() {
+    const startBtn = document.getElementById('start-debate-btn');
+    const clearBtn = document.getElementById('clear-debate-btn');
+    const debateStatus = document.getElementById('debate-status');
+    const debateOutput = document.getElementById('debate-output');
+    const agentsActivity = document.getElementById('agents-activity');
+    const finalVerdict = document.getElementById('final-verdict');
+    
+    // Hide placeholder and show status
+    debateOutput.innerHTML = '';
+    debateStatus.style.display = 'block';
+    agentsActivity.style.display = 'block';
+    finalVerdict.style.display = 'none';
+    
+    // Update buttons
+    startBtn.disabled = true;
+    startBtn.innerHTML = `
+        <div class="btn-icon loading"></div>
+        Starting...
+    `;
+    clearBtn.style.display = 'inline-flex';
+    
+    try {
+        // Call the actual backend debate API
+        addDebateMessage('system', 'Initializing debate agents...');
+        
+        const response = await fetch(`${API_BASE_URL}/debate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Display real debate transcript
+        if (data.debate_transcript && Array.isArray(data.debate_transcript)) {
+            addDebateMessage('system', 'Debate agents ready. Starting analysis...');
+            await sleep(1000);
+            
+            for (const message of data.debate_transcript) {
+                const agent = message.agent || 'system';
+                const content = message.message || message.content || JSON.stringify(message);
+                addDebateMessage(agent, content);
+                await sleep(800); // Shorter delay to show more content faster
+            }
+        } else if (data.full_transcript) {
+            // Handle full transcript if available
+            addDebateMessage('system', 'Loading complete debate transcript...');
+            await sleep(1000);
+            
+            // Parse the full transcript text and display it section by section
+            const sections = data.full_transcript.split('======================================================================');
+            
+            for (const section of sections) {
+                if (section.trim()) {
+                    const agent = parseAgentFromSection(section);
+                    const content = section.trim();
+                    if (content) {
+                        addDebateMessage(agent, content);
+                        await sleep(1200); // Longer delay for full sections
+                    }
+                }
+            }
+        } else {
+            addDebateMessage('system', data.message || 'Debate completed successfully');
+        }
+        
+        // Try to get additional debate result if available
+        if (data.debate_file) {
+            try {
+                const resultResponse = await fetch(`${API_BASE_URL}/debate/result`);
+                if (resultResponse.ok) {
+                    const resultData = await resultResponse.json();
+                    
+                    if (resultData.debate_transcript && Array.isArray(resultData.debate_transcript)) {
+                        addDebateMessage('system', 'Loading complete debate transcript...');
+                        await sleep(500);
+                        
+                        for (const entry of resultData.debate_transcript) {
+                            let agent = 'system';
+                            let content = entry;
+                            
+                            // Parse the entry to determine agent and clean content
+                            if (entry.startsWith('LEFTIST')) {
+                                agent = 'leftist';
+                                content = entry.replace(/^LEFTIST[^:]*:\n?/, '');
+                            } else if (entry.startsWith('RIGHTIST')) {
+                                agent = 'rightist';
+                                content = entry.replace(/^RIGHTIST[^:]*:\n?/, '');
+                            }
+                            
+                            if (content.trim()) {
+                                addDebateMessage(agent, content.trim());
+                                await sleep(1200);
+                            }
+                        }
+                        
+                        // Add the final judgment
+                        if (resultData.judgment) {
+                            await sleep(1000);
+                            addDebateMessage('judge', resultData.judgment);
+                        }
+                    } else if (resultData.final_verdict) {
+                        addDebateMessage('judge', resultData.final_verdict.message || 'Final analysis complete.');
+                    }
+                }
+            } catch (e) {
+                console.log('Could not fetch additional debate results:', e);
+            }
+        }
+        
+        // Show final verdict
+        finalVerdict.style.display = 'block';
+        const verdictContent = document.getElementById('verdict-content');
+        
+        // Check if we can get the trust score from debate result
+        let finalTrustScore = data.trust_score;
+        let finalJudgment = null;
+        
+        try {
+            if (data.debate_file) {
+                const resultResponse = await fetch(`${API_BASE_URL}/debate/result`);
+                if (resultResponse.ok) {
+                    const resultData = await resultResponse.json();
+                    finalTrustScore = resultData.trust_score || finalTrustScore;
+                    finalJudgment = resultData.judgment;
+                }
+            }
+        } catch (e) {
+            console.log('Could not fetch trust score from debate result:', e);
+        }
+        
+        if (data.final_verdict) {
+            verdictContent.innerHTML = `
+                <p><strong>Trust Score: ${data.final_verdict.trust_score || finalTrustScore || 'N/A'}%</strong></p>
+                <p>${data.final_verdict.reasoning || data.final_verdict.message || 'Analysis completed'}</p>
+                ${data.final_verdict.recommendation ? `<p><strong>Recommendation:</strong> ${data.final_verdict.recommendation}</p>` : ''}
+            `;
+        } else {
+            verdictContent.innerHTML = `
+                <p><strong>Trust Score: ${finalTrustScore || 'N/A'}%</strong></p>
+                <p>${data.message}</p>
+                <p><strong>Recommendation:</strong> Review the debate transcript above for detailed analysis.</p>
+                ${finalJudgment ? `<details><summary>Full Analysis</summary><pre style="white-space: pre-wrap; font-size: 12px; color: rgba(255,255,255,0.7);">${finalJudgment}</pre></details>` : ''}
+            `;
+        }
+        
+        // Update status to completed
+        debateStatus.innerHTML = `
+            <div class="status-indicator">
+                <div class="status-dot" style="background: #10b981; animation: none;"></div>
+                <span class="status-text" style="color: #10b981;">Debate completed successfully</span>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Debate analysis failed:', error);
+        addDebateMessage('system', `Error: ${error.message}. Please check if the backend server is running.`);
+        
+        debateStatus.innerHTML = `
+            <div class="status-indicator">
+                <div class="status-dot" style="background: #ef4444; animation: none;"></div>
+                <span class="status-text" style="color: #ef4444;">Debate failed - ${error.message}</span>
+            </div>
+        `;
+    } finally {
+        // Reset start button
+        startBtn.disabled = false;
+        startBtn.innerHTML = `
+            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h12a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"></path>
+            </svg>
+            Start Debate
+        `;
+        agentsActivity.style.display = 'none';
+    }
+}
+
+async function simulateDebate() {
+    // Simulate the debate process with realistic timing
+    const messages = [
+        { sender: 'leftist', content: 'Analyzing progressive perspectives on the given information...' },
+        { sender: 'rightist', content: 'Examining conservative viewpoints and evaluating source credibility...' },
+        { sender: 'leftist', content: 'The evidence suggests a bias toward establishment narratives. Alternative sources should be considered.' },
+        { sender: 'rightist', content: 'Traditional sources often have established credibility. We should weigh institutional reliability heavily.' },
+        { sender: 'leftist', content: 'However, institutional sources can perpetuate systemic biases. Grassroots perspectives offer valuable insights.' },
+        { sender: 'rightist', content: 'While grassroots sources provide diversity, they may lack rigorous fact-checking standards.' },
+        { sender: 'judge', content: 'Both agents present valid concerns. Analyzing the balance of evidence and source diversity...' }
+    ];
+    
+    for (let i = 0; i < messages.length; i++) {
+        await sleep(2000 + Math.random() * 1000); // Random delay between 2-3 seconds
+        addDebateMessage(messages[i].sender, messages[i].content);
+    }
+    
+    // Add final verdict
+    await sleep(2000);
+    const verdictContent = document.getElementById('verdict-content');
+    verdictContent.innerHTML = `
+        <p><strong>Trust Score: 72%</strong></p>
+        <p>The analysis reveals a moderate level of trustworthiness. Both agents identified legitimate concerns about source diversity and credibility standards. The information appears reliable but benefits from cross-referencing multiple perspectives.</p>
+        <p><strong>Recommendation:</strong> Proceed with cautious optimism while seeking additional verification from diverse sources.</p>
+    `;
+}
+
+function parseAgentFromSection(section) {
+    // Parse the agent type from section headers
+    const text = section.toLowerCase();
+    
+    if (text.includes('[leftist') || text.includes('leftist agent')) {
+        return 'leftist';
+    } else if (text.includes('[rightist') || text.includes('rightist agent')) {
+        return 'rightist';
+    } else if (text.includes('[judge') || text.includes('judge -') || text.includes('final verdict')) {
+        return 'judge';
+    } else if (text.includes('round') || text.includes('rebuttal')) {
+        // Determine from context
+        if (text.includes('leftist rebuttal')) return 'leftist';
+        if (text.includes('rightist rebuttal')) return 'rightist';
+        return 'system';
+    } else if (text.includes('checking if debate') || text.includes('ready:') || text.includes('maximum rounds')) {
+        return 'system';
+    } else {
+        return 'system';
+    }
+}
+
+function addDebateMessage(sender, content) {
+    const debateOutput = document.getElementById('debate-output');
+    
+    // Remove placeholder if it exists
+    const placeholder = debateOutput.querySelector('.debate-placeholder');
+    if (placeholder) {
+        placeholder.remove();
+    }
+    
+    // Map agent names to proper display format
+    let displaySender = sender;
+    let senderClass = sender.toLowerCase();
+    
+    if (sender.toLowerCase().includes('leftist') || sender.toLowerCase().includes('left')) {
+        displaySender = 'Leftist Agent';
+        senderClass = 'leftist';
+    } else if (sender.toLowerCase().includes('rightist') || sender.toLowerCase().includes('right')) {
+        displaySender = 'Rightist Agent';
+        senderClass = 'rightist';
+    } else if (sender.toLowerCase().includes('judge') || sender.toLowerCase().includes('moderator')) {
+        displaySender = 'Judge AI';
+        senderClass = 'judge';
+    } else if (sender.toLowerCase().includes('system')) {
+        displaySender = 'System';
+        senderClass = 'system';
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'debate-message';
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <span class="message-sender ${senderClass}">${displaySender}</span>
+        </div>
+        <div class="message-content">${content}</div>
+    `;
+    
+    debateOutput.appendChild(messageDiv);
+    debateOutput.scrollTop = debateOutput.scrollHeight;
+}
+
+function clearDebateOutput() {
+    const debateOutput = document.getElementById('debate-output');
+    const debateStatus = document.getElementById('debate-status');
+    const agentsActivity = document.getElementById('agents-activity');
+    const finalVerdict = document.getElementById('final-verdict');
+    const clearBtn = document.getElementById('clear-debate-btn');
+    
+    // Reset output
+    debateOutput.innerHTML = `
+        <div class="debate-placeholder">
+            <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z"></path>
+            </svg>
+            <p>No debate started yet. Click "Start Debate" to begin the AI analysis.</p>
+        </div>
+    `;
+    
+    // Hide elements
+    debateStatus.style.display = 'none';
+    agentsActivity.style.display = 'none';
+    finalVerdict.style.display = 'none';
+    clearBtn.style.display = 'none';
+}

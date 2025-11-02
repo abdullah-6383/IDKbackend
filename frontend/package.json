@@ -1,0 +1,27 @@
+{
+  "name": "information-trust-analysis-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Information Trust Analysis System",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l 3000",
+    "dev": "npx serve -s . -l 3000",
+    "build": "echo 'No build step needed - static files ready'",
+    "preview": "npx serve -s . -l 8080"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "keywords": [
+    "information-analysis",
+    "fact-checking",
+    "ai",
+    "frontend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abdullah-6383/IDKbackend.git"
+  }
+}

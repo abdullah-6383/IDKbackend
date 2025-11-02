@@ -73,32 +73,49 @@ A comprehensive web interface for the Information Trust Analysis System that pro
 
 ### Prerequisites
 ```bash
-# Ensure you have Python packages installed
+# For backend dependencies
 pip install fastapi uvicorn
+
+# For frontend dependencies
+cd frontend
+npm install
 ```
 
-### Running the Frontend
+### Running the Frontend (Separate Hosting)
 
-1. **Start the server:**
+1. **Start the frontend server:**
 ```bash
-cd IDK
-python server.py
+cd frontend
+npm start
 ```
 
-2. **Open your browser:**
+2. **Start the backend server (in separate terminal):**
+```bash
+cd backend
+python start_backend.py
 ```
-http://localhost:8000
+
+3. **Open your browser:**
 ```
+http://localhost:3000  (Frontend)
+http://localhost:8000  (Backend API)
+```
+
+### Alternative Startup
+- **Windows**: Run `start_frontend.bat` and `start_backend.bat`
+- **Linux/Mac**: Run `./start_frontend.sh` and `./start_backend.sh`
 
 ### API Endpoints
 
-- `GET /` - Frontend interface
 - `POST /process` - Start analysis
 - `GET /results` - Get analysis results
 - `POST /debate` - Start debate simulation
 - `GET /debate/result` - Get debate results
 - `GET /status` - System status
 - `GET /health` - Health check
+- `GET /data/perspectives/{perspective}` - Get sample data
+
+Backend API available at: `http://localhost:8000`
 
 ## Usage Guide
 
@@ -184,18 +201,24 @@ The system includes sample data about Charles James Kirk for demonstration purpo
 ## Customization
 
 ### Styling
-Edit `frontend/styles.css` to customize:
+Edit `styles.css` to customize:
 - Color schemes
 - Fonts and typography
 - Layout and spacing
 - Animations and transitions
 
 ### Functionality
-Edit `frontend/script.js` to modify:
-- API endpoints
+Edit `script.js` to modify:
+- API endpoints (via config.js)
 - Process flow steps
 - UI interactions
 - Data processing
+
+### Configuration
+Edit `config.js` to configure:
+- Backend API URLs for different environments
+- Feature flags
+- UI settings
 
 ## Production Deployment
 

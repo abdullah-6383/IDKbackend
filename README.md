@@ -1,6 +1,77 @@
-# Google Search + Gemini Relevance Filter
+# Information Trust Analysis System
 
-Single-file system that searches Google and filters links using Gemini AI for relevance.
+A comprehensive AI-powered system for analyzing information trustworthiness through automated fact-checking, relevance analysis, and AI debate simulation.
+
+## 🏗️ Project Structure
+
+```
+IDK/
+├── frontend/              # Frontend application
+│   ├── index.html        # Main HTML interface
+│   ├── script.js         # JavaScript application logic
+│   ├── styles.css        # CSS styling
+│   └── README.md         # Frontend documentation
+├── backend/              # Backend services
+│   ├── server.py         # Main FastAPI server (port 8000)
+│   ├── dummy_server.py   # Dummy data server (port 8001)
+│   ├── main.py          # Core analysis logic
+│   ├── debate.py        # Debate orchestrator
+│   ├── start_backend.py # Backend startup script
+│   ├── requirements.txt # Python dependencies
+│   ├── data/           # Input/output data
+│   ├── api/            # API configurations
+│   └── README.md       # Backend documentation
+└── README.md            # This file
+```
+
+## 🚀 Quick Start (Separate Hosting)
+
+### Prerequisites
+- Python 3.8+ with pip
+- Node.js 16+ with npm
+
+### 1. Install Backend Dependencies
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### 2. Install Frontend Dependencies
+```bash
+cd frontend
+npm install
+```
+
+### 3. Start Backend Services
+```bash
+# From backend directory
+cd backend
+python start_backend.py
+```
+This starts:
+- API Server on `http://localhost:8000`
+- Dummy Server on `http://localhost:8001`
+
+### 4. Start Frontend (in a new terminal)
+```bash
+# From frontend directory
+cd frontend
+npm start
+```
+This starts:
+- Frontend Server on `http://localhost:3000`
+
+### 5. Access the Application
+- **Frontend**: `http://localhost:3000`
+- **Backend API**: `http://localhost:8000`
+
+## 📁 Separate Hosting Benefits
+
+✅ **Independent Deployment**: Deploy frontend and backend to different platforms  
+✅ **Scalability**: Scale frontend and backend independently  
+✅ **Development**: Frontend and backend teams can work separately  
+✅ **CDN Ready**: Frontend can be served from CDN  
+✅ **Environment Flexibility**: Different configurations for dev/staging/prod
 
 ## Usage
 

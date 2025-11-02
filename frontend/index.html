@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Information Trust Analysis System</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Configuration -->
+    <script src="config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -265,77 +267,188 @@
 
         <!-- Debate Tab -->
         <div id="debate" class="tab-content">
-            <div class="debate-section">
-                <h2><i class="fas fa-balance-scale"></i> AI Debate Analysis</h2>
-                
-                <div class="debate-controls">
-                    <button class="btn btn-primary" onclick="startDebate()" id="debate-btn">
-                        <i class="fas fa-play"></i> Start Debate
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearDebate()">
-                        <i class="fas fa-trash"></i> Clear Debate
-                    </button>
-                </div>
-
-                <div class="trust-score-display" id="trust-score-display" style="display: none;">
-                    <div class="trust-score-card">
-                        <div class="score-circle">
-                            <div class="score-number" id="final-trust-score">0%</div>
-                        </div>
-                        <div class="score-info">
-                            <h3>Final Trust Score</h3>
-                            <p id="trust-verdict">Analysis pending...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="debate-arena" id="debate-arena">
-                    <div class="agents-intro">
-                        <div class="agent-card leftist">
-                            <div class="agent-avatar">
-                                <i class="fas fa-user-tie"></i>
+            <div class="module-layout">
+                <!-- Header -->
+                <header class="module-header">
+                    <div class="module-container">
+                        <div class="header-content">
+                            <!-- Left: Module info -->
+                            <div class="module-info">
+                                <div class="module-number">4</div>
+                                <div class="module-details">
+                                    <div class="title-row">
+                                        <h1 class="module-title">Agent Debate & Analysis</h1>
+                                        <span class="status-badge">Under Development</span>
+                                    </div>
+                                    <p class="module-description">Two agents debate perspectives to analyze the overall standing of information</p>
+                                </div>
                             </div>
-                            <h4>Leftist Agent</h4>
-                            <p>Analyzing from progressive perspective with leftist-leaning sources</p>
-                        </div>
-                        
-                        <div class="vs-indicator">
-                            <i class="fas fa-bolt"></i>
-                            <span>VS</span>
-                        </div>
-                        
-                        <div class="agent-card rightist">
-                            <div class="agent-avatar">
-                                <i class="fas fa-user-shield"></i>
-                            </div>
-                            <h4>Rightist Agent</h4>
-                            <p>Analyzing from conservative perspective with rightist-leaning sources</p>
-                        </div>
-                    </div>
 
-                    <div class="debate-transcript" id="debate-transcript">
-                        <div class="no-debate">
-                            <i class="fas fa-comments"></i>
-                            <p>No debate started yet. Click "Start Debate" to begin the AI analysis.</p>
-                        </div>
-                    </div>
-
-                    <div class="judge-section" id="judge-section" style="display: none;">
-                        <div class="judge-card">
-                            <div class="judge-avatar">
-                                <i class="fas fa-gavel"></i>
-                            </div>
-                            <h4>Judge AI</h4>
-                            <div class="judge-verdict" id="judge-verdict">
-                                <p>Analyzing debate and evidence...</p>
+                            <!-- Right: Navigation -->
+                            <div class="module-nav">
+                                <!-- Module tabs -->
+                                <div class="nav-tabs">
+                                    <button class="nav-tab" onclick="goToModule(1)">1</button>
+                                    <button class="nav-tab" onclick="goToModule(2)">2</button>
+                                    <button class="nav-tab" onclick="goToModule(3)">3</button>
+                                    <button class="nav-tab active" onclick="goToModule(4)">4</button>
+                                    <button class="nav-tab" onclick="goToModule(5)">5</button>
+                                </div>
+                                <!-- Home button -->
+                                <button class="home-button" onclick="goToHome()">Home</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </header>
+
+                <!-- Main Content -->
+                <main class="module-main">
+                    <div class="module-container">
+                        <div class="content-sections">
+                            <!-- Overview -->
+                            <div class="content-card">
+                                <h2 class="section-title">Overview</h2>
+                                <p class="section-text">
+                                    This module receives the categorized perspectives from Module 3 and uses two sophisticated 
+                                    AI agents to engage in structured debate, analyzing the overall standing of the information.
+                                </p>
+                            </div>
+
+                            <!-- Core Principle -->
+                            <div class="content-card">
+                                <h3 class="section-title">Core Principle</h3>
+                                <div class="principle-content">
+                                    <p class="principle-quote">
+                                        "AI can never be sure if information is true, only humans can."
+                                    </p>
+                                    <p class="principle-explanation">
+                                        Therefore, we make the AI as sophisticated as possible to provide comprehensive analysis 
+                                        that empowers human decision-making.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Agent System -->
+                            <div class="content-card">
+                                <h3 class="section-title">Agent Architecture</h3>
+                                <div class="agent-grid">
+                                    <div class="agent-card">
+                                        <div class="agent-label">Leftist Agent</div>
+                                        <div class="agent-description">Analyzes progressive perspectives</div>
+                                    </div>
+                                    <div class="agent-card">
+                                        <div class="agent-label">Rightist Agent</div>
+                                        <div class="agent-description">Analyzes conservative perspectives</div>
+                                    </div>
+                                </div>
+                                <div class="common-ground-card">
+                                    <div class="agent-label">Common Ground</div>
+                                    <div class="agent-description">Both agents analyze shared perspectives to avoid debate folly</div>
+                                </div>
+                            </div>
+
+                            <!-- Debate Output -->
+                            <div class="content-card">
+                                <h3 class="section-title">Live Debate Analysis</h3>
+                                
+                                <!-- Debate Controls -->
+                                <div class="debate-controls">
+                                    <button class="start-debate-btn" onclick="startDebateAnalysis()" id="start-debate-btn">
+                                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h12a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"></path>
+                                        </svg>
+                                        Start Debate
+                                    </button>
+                                    <button class="clear-debate-btn" onclick="clearDebateOutput()" id="clear-debate-btn" style="display: none;">
+                                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Clear
+                                    </button>
+                                </div>
+
+                                <!-- Debate Status -->
+                                <div class="debate-status" id="debate-status" style="display: none;">
+                                    <div class="status-indicator">
+                                        <div class="status-dot"></div>
+                                        <span class="status-text">Debate in progress...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Debate Output Area -->
+                                <div class="debate-output" id="debate-output">
+                                    <div class="debate-placeholder">
+                                        <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z"></path>
+                                        </svg>
+                                        <p>No debate started yet. Click "Start Debate" to begin the AI analysis.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Agents Activity -->
+                                <div class="agents-activity" id="agents-activity" style="display: none;">
+                                    <div class="agent-status">
+                                        <div class="agent-indicator leftist">
+                                            <div class="agent-dot"></div>
+                                            <span>Leftist Agent</span>
+                                        </div>
+                                        <div class="agent-indicator rightist">
+                                            <div class="agent-dot"></div>
+                                            <span>Rightist Agent</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Final Verdict -->
+                                <div class="final-verdict" id="final-verdict" style="display: none;">
+                                    <div class="verdict-header">
+                                        <svg class="verdict-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                        </svg>
+                                        <h4>Final Analysis</h4>
+                                    </div>
+                                    <div class="verdict-content" id="verdict-content">
+                                        <!-- Verdict will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Footer -->
+                <footer class="module-footer">
+                    <div class="module-container">
+                        <div class="footer-content">
+                            <button class="nav-button" onclick="previousModule()">
+                                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                                <span>Previous</span>
+                            </button>
+
+                            <!-- Progress dots -->
+                            <div class="progress-dots">
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot active"></div>
+                                <div class="progress-dot"></div>
+                            </div>
+
+                            <button class="nav-button" onclick="nextModule()">
+                                <span>Next</span>
+                                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     </div>
 
-    <script src="/static/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

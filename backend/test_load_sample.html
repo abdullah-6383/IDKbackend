@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Load Sample Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Load Sample Data</h1>
+    
+    <div class="test-section">
+        <h2>Step 1: Test Dummy Server (Port 8001)</h2>
+        <button onclick="testDummyServer()">Test Dummy Server</button>
+        <div id="dummy-output" class="output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Test Main Server Endpoint (Port 8000)</h2>
+        <button onclick="testMainServer()">Test Main Server</button>
+        <div id="main-output" class="output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 3: Test Complete Flow</h2>
+        <button onclick="testCompleteFlow()">Test Load Sample Button</button>
+        <div id="flow-output" class="output"></div>
+    </div>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const className = type;
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        async function testDummyServer() {
+            clearLog('dummy-output');
+            log('dummy-output', 'Testing dummy server...', 'info');
+            
+            try {
+                // Test health
+                log('dummy-output', 'GET http://localhost:8001/health', 'info');
+                let response = await fetch('http://localhost:8001/health');
+                log('dummy-output', `Response: ${response.status}`, response.ok ? 'success' : 'error');
+                let data = await response.json();
+                log('dummy-output', `Health Data: ${JSON.stringify(data, null, 2)}`, 'success');
+                
+                // Test sample-input
+                log('dummy-output', '\nGET http://localhost:8001/data/sample-input', 'info');
+                response = await fetch('http://localhost:8001/data/sample-input');
+                log('dummy-output', `Response: ${response.status}`, response.ok ? 'success' : 'error');
+                data = await response.json();
+                log('dummy-output', `Topic: ${data.topic}`, 'success');
+                
+                // Test perspectives/all
+                log('dummy-output', '\nGET http://localhost:8001/data/perspectives/all', 'info');
+                response = await fetch('http://localhost:8001/data/perspectives/all');
+                log('dummy-output', `Response: ${response.status}`, response.ok ? 'success' : 'error');
+                data = await response.json();
+                log('dummy-output', `Total items: ${data.total_search_items}`, 'success');
+                
+                log('dummy-output', '\n✅ Dummy server is working!', 'success');
+            } catch (error) {
+                log('dummy-output', `\n❌ ERROR: ${error.message}`, 'error');
+                log('dummy-output', 'Make sure dummy server is running: python dummy_server.py', 'error');
+            }
+        }
+
+        async function testMainServer() {
+            clearLog('main-output');
+            log('main-output', 'Testing main server load-sample-data endpoint...', 'info');
+            
+            try {
+                log('main-output', 'GET http://localhost:8000/load-sample-data', 'info');
+                const response = await fetch('http://localhost:8000/load-sample-data');
+                log('main-output', `Response: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                const data = await response.json();
+                log('main-output', `\nResponse Data:`, 'info');
+                log('main-output', JSON.stringify(data, null, 2), 'success');
+                
+                if (data.status === 'success') {
+                    log('main-output', '\n✅ Main server is working and can reach dummy server!', 'success');
+                } else {
+                    log('main-output', '\n⚠️ Main server responded but with warnings', 'error');
+                }
+            } catch (error) {
+                log('main-output', `\n❌ ERROR: ${error.message}`, 'error');
+                log('main-output', 'Make sure main server is running: python server.py', 'error');
+            }
+        }
+
+        async function testCompleteFlow() {
+            clearLog('flow-output');
+            log('flow-output', 'Simulating "Load Sample" button click...', 'info');
+            log('flow-output', 'Frontend -> Main Server -> Dummy Server', 'info');
+            
+            try {
+                log('flow-output', '\nGET http://localhost:8000/load-sample-data', 'info');
+                const response = await fetch('http://localhost:8000/load-sample-data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                log('flow-output', `Response: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const text = await response.text();
+                    log('flow-output', `Error: ${text}`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                log('flow-output', '\n📦 Data received from server:', 'success');
+                log('flow-output', `  Status: ${data.status}`, 'success');
+                log('flow-output', `  Message: ${data.message}`, 'success');
+                log('flow-output', `  Topic: ${data.topic?.substring(0, 50)}...`, 'success');
+                log('flow-output', `  Text length: ${data.text?.length} chars`, 'success');
+                log('flow-output', `  Significance: ${data.significance_score}`, 'success');
+                log('flow-output', `  Total items: ${data.total_search_items}`, 'success');
+                
+                log('flow-output', '\n✅ Complete flow is working! Data can be loaded.', 'success');
+                
+            } catch (error) {
+                log('flow-output', `\n❌ ERROR: ${error.message}`, 'error');
+                log('flow-output', 'Check that both servers are running:', 'error');
+                log('flow-output', '  1. python dummy_server.py (port 8001)', 'error');
+                log('flow-output', '  2. python server.py (port 8000)', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
