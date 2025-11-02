@@ -17,18 +17,27 @@ class RelevanceSearchSystem:
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
         
-        self.api_key = self.config['api_key']
-        self.search_engine_id = self.config['search_engine_id']
+    # Prefer environment variables in production, fallback to config.json for local/dev
+    self.api_key = os.getenv("GOOGLE_API_KEY", self.config.get('api_key', ''))
+    self.search_engine_id = os.getenv("SEARCH_ENGINE_ID", self.config.get('search_engine_id', ''))
         self.links_per_text = self.config['links_per_text']
         self.delay = self.config['rate_limiting']['delay_between_requests']
         self.max_retries = self.config['rate_limiting']['max_retries']
         
-        self.search_service = build("customsearch", "v1", developerKey=self.api_key)
-        
-        genai.configure(api_key=self.api_key)
-        self.gemini_model = genai.GenerativeModel(
-            model_name=self.config['gemini_settings']['model']
-        )
+        self.search_service = build("customsearch", "v1", developerKey=self.api_key) if self.api_key else None
+
+        # Configure Gemini if API key is available; otherwise run in degraded mode
+        self.gemini_model = None
+        try:
+            if self.api_key:
+                genai.configure(api_key=self.api_key)
+                self.gemini_model = genai.GenerativeModel(
+                    model_name=self.config['gemini_settings']['model']
+                )
+            else:
+                print("Warning: GOOGLE_API_KEY not set; Gemini features disabled.\n")
+        except Exception as e:
+            print(f"Warning: Could not initialize Gemini model: {str(e)}\n")
         
         input_file = os.path.join('data', 'input.json')
         with open(input_file, 'r', encoding='utf-8') as f:
@@ -42,7 +51,7 @@ class RelevanceSearchSystem:
         self.request_count = 0
         self.minute_start = time.time()
         
-        self.topic_keywords = self._extract_keywords_from_topic()
+    self.topic_keywords = self._extract_keywords_from_topic()
         
         try:
             chrome_options = Options()
@@ -78,6 +87,10 @@ class RelevanceSearchSystem:
         return keywords
     
     def rephrase_with_topic_context(self, original_text: str) -> str:
+        # If Gemini isn't configured, return original text unchanged
+        if not getattr(self, 'gemini_model', None):
+            return original_text
+
         self._manage_rate_limit()
         
         prompt = f"""You are rephrasing search queries to be more specific and contextual.
@@ -156,6 +169,10 @@ Respond ONLY with the rephrased text, nothing else."""
     
     def search_google(self, query: str, rephrased_query: str) -> List[Dict[str, str]]:
         search_query = f"{rephrased_query} {self.topic_keywords}"
+
+        if not self.search_service:
+            # No Search API configured
+            return []
         
         for attempt in range(self.max_retries):
             try:
@@ -206,6 +223,14 @@ Respond ONLY with the rephrased text, nothing else."""
         #         self.minute_start = time.time()
     
     def check_trust_score(self, link_data: dict) -> dict:
+        # If Gemini isn't configured, return a neutral default
+        if not getattr(self, 'gemini_model', None):
+            return {
+                'trust_score': 0.5,
+                'source_type': 'Unknown',
+                'trust_reasoning': 'Gemini not configured'
+            }
+
         self._manage_rate_limit()
         
         url = link_data.get('link', '')
@@ -299,6 +324,15 @@ Respond ONLY with a JSON object:
         }
     
     def check_relevance(self, link_data: dict, original_text: str) -> dict:
+        # If Gemini isn't configured, return a conservative not-relevant result
+        if not getattr(self, 'gemini_model', None):
+            return {
+                'relevant': False,
+                'confidence': 0.0,
+                'reason': 'Gemini not configured',
+                'link_data': link_data
+            }
+
         self._manage_rate_limit()
         
         prompt = f"""You are analyzing web search results for relevance to a specific topic and context.
